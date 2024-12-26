@@ -5,7 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 30s
-  url: https://github.com/brunokino/backstage-terraform-integrations/tree/main/backstage-templates-for-eks/azure-blob-storage
+  url: https://github.com/brunokino/backstage-terraform-integrations/tree/main/backstage-templates-for-azure/azure-blob-storage/terraform-code/modules/azure_storage_account
   ref:
     branch: main
 ---

@@ -1,0 +1,11 @@
+piVersion: resources.azure.com/v1api20200601
+kind: ResourceGroup
+metadata:
+  name: ${{values.name}}
+  namespace: default
+spec:
+  location: eastus2
+  tags:
+    BusinessStructure: ${{values.BusinessStructure}}
+    TeamName: ${{values.TeamName}}
+    ValueStream: ${{values.ValueStream}}

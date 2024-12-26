@@ -1,0 +1,8 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: backstage-templates-for-azure
+  description: A public collection of Backstage templates for Azure
+spec:
+  targets:
+    - ./aso-azure-blob-storage/template-aso-blob-storage.yaml

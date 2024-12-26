@@ -1,0 +1,66 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  description: Creates an Azure Blob Storage using ASO (Azure Service Operator)
+  name: aso-blob-storage
+  title: Creates an an Azure Blob Storage
+spec:
+  owner: guest
+  type: service
+  parameters:
+    - properties:
+        name:
+          title: name of this Azure Blob Storage
+          description: Enter a name without spaces and only alphanumeric characters  
+          type: string
+        BusinessStructure:
+          default: Kinoshita Lab
+          type: string
+        TeamName:
+          default: Platform Engineering
+          type: string
+        ValueStream: 
+          default: Cloud Platform
+          type: string
+      title: Configuration options
+  steps:
+    - action: fetch:template
+      id: fetch-base
+      input:
+        url: ./template-aso-blob-storage/
+        values:
+          name: ${{ parameters.name }}
+          BusinessStructure: ${{ parameters.BusinessStructure }}
+          TeamName: ${{ parameters.TeamName }}
+          ValueStream: ${{ parameters.ValueStream }}
+      name: Fetch Base
+    - id: publish
+      name: Publishing to a gitea git repository
+      action: publish:gitea
+      input:
+        description: Example Blob Storage demo
+        # Hard coded value for this demo purposes only.
+        repoUrl: cnoe.localtest.me:8443/gitea?repo=${{parameters.name}}
+        defaultBranch: main
+    - id: create-argocd-app
+      name: Create ArgoCD App
+      action: cnoe:create-argocd-app
+      input:
+        appName: ${{parameters.name}}
+        appNamespace: default
+        argoInstance: in-cluster
+        projectName: default
+        # necessary until we generate our own cert
+        repoUrl: http://my-gitea-http.gitea.svc.cluster.local:3000/giteaAdmin/${{parameters.name}}
+        path: "manifests"
+    - id: register
+      name: Register
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
+        catalogInfoPath: 'catalog-info.yaml'
+  output:
+    links:
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps['register'].output.entityRef }}
