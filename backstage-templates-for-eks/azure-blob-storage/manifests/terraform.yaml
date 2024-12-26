@@ -1,0 +1,31 @@
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: GitRepository
+metadata:
+  name: iac-azure-blob
+  namespace: flux-system
+spec:
+  interval: 30s
+  url: https://github.com/brunokino/backstage-terraform-integrations/tree/main/backstage-templates-for-eks/azure-blob-storage
+  ref:
+    branch: main
+---
+apiVersion: infra.contrib.fluxcd.io/v1alpha2
+kind: Terraform
+metadata:
+  name: tf-azure-blob-${{values.name}}
+  namespace: flux-system
+spec:
+  approvePlan: auto
+  interval: 1m
+  path: ./
+  sourceRef:
+    kind: GitRepository
+    name: iac-azure-blob
+    namespace: flux-system
+  vars:
+  - name: name
+    value: ${{values.name}}
+  varsFrom:
+  - kind: Secret
+    name: azure-creds
+
